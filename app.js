@@ -131,15 +131,12 @@ app.get('/balance-information', (req, res) => {
         "CorporateID": "BCAAPI2016",
         "AccountNumber": "0201245680"
       }
+
       let requestBodyReplace = JSON.stringify(requestBody).replaceAll('\n', '').replaceAll('\t', '').replaceAll('\r', '').replaceAll(' ', '')
-      
       console.log("request body Replace balance Information ===> ", requestBodyReplace)
 
       let sha256 = crypto.createHash('sha256').update(requestBodyReplace).digest("hex").toLowerCase()
-      
       let timeStamp = new Date().toISOString()
-
-      console.log(timeStamp)
       let stringHash = `GET:/banking/v3/corporates/${requestBody.CorporateID}/accounts/${requestBody.AccountNumber}:` + accessToken + ":" + sha256 + ":" + timeStamp;
       
       let key = API_SECRET
@@ -265,11 +262,8 @@ app.post('/topup/', (req, res) => {
   timeStamp1.setHours(timeStamp1.getHours() + 7);
   let validTime = timeStamp1.toISOString().split('Z')[0]
 
-  console.log(requestBodyReplace);
-  console.log("time valid", validTime)
   let stringHash = "KsvcN0dSgNOMOluDMQBzGUsQekorspr416IEPCFqLZhi13uykYDQFKH7yaBiWGCmYbmpqHOISaynEYQ1DYGQjmtj4tkhBa4rha8IE712kDUprmXptFlhXeV5" + ":" + sha256 + ":" + validTime;
   let signature = crypto.createHmac('sha256', "KsvcN0dSgNOMOluDMQBzGUsQekorspr416IEPCFqLZhi13uykYDQFKH7yaBiWGCmYbmpqHOISaynEYQ1DYGQjmtj4tkhBa4rha8IE712kDUprmXptFlhXeV5").update(stringHash).digest('hex')
-  console.log("signature : ", signature)
 
   let options = {
     uri: `http://localhost:9501/api/investor/001.01.0000088/topup`,
@@ -291,7 +285,6 @@ app.post('/topup/', (req, res) => {
       })
     })
     .catch((err) => {
-      // console.log("err ===> ", err)
       res.status(400).json({
         "error": err.error
       })
@@ -333,11 +326,6 @@ app.post('/fund-transfer-domestic', (req, res) => {
 
       today = yyyy+'-'+mm+'-'+dd;
 
-      console.log(typeof dd)
-      console.log(typeof today)
-      console.log("today: ", today)
-      console.log("iso date: ", new Date().toISOString().slice(0,10))
-
       let requestBody = {
         "TransactionID" : "00000001",
         "TransactionDate" : "2018-05-03",
@@ -355,17 +343,12 @@ app.post('/fund-transfer-domestic', (req, res) => {
         "Remark2" : "Online Transfer"
       }
 
-      console.log("transaction date :", requestBody["TransactionDate"])
-      console.log("waktu",new Date().toISOString())
-
       let requestBodyReplace = JSON.stringify(requestBody).replaceAll('\n', '').replaceAll('\t', '').replaceAll('\r', '').replaceAll(' ', '')
       let sha256 = crypto.createHash('sha256').update(requestBodyReplace).digest("hex").toLowerCase()
       let timeStamp = new Date().toISOString()
       let stringHash = `POST:/banking/corporates/transfers/domestic:` + accessToken + ":" + sha256 + ":" + timeStamp;
       let key = API_SECRET
       let signature = crypto.createHmac('sha256', key).update(stringHash).digest('hex')
-
-      console.log("stringHash: ", stringHash)
 
       let options = {
         uri: `https://sandbox.bca.co.id/banking/corporates/transfers/domestic`,
@@ -400,7 +383,6 @@ app.post('/fund-transfer-domestic', (req, res) => {
         })
     })
     .catch((err) => {
-      console.log("2.",err.error)
       console.log(err.error)
     })
 })
